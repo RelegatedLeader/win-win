@@ -38,23 +38,23 @@ app.post("/save-list", async (req, res) => {
   console.log("Incoming data for save-list:", { hash, name, tasks });
 
   try {
-    // Check if the hash already exists
-    let list = await TaskList.findOne({ hash });
-
-    if (list) {
-      list.tasks = [...list.tasks, ...tasks];
-      await list.save();
-      res.status(200).send({ message: "List updated successfully!" });
-    } else {
-      const newList = new TaskList({
-        hash,
-        name,
-        date: new Date(),
-        tasks,
-      });
-      await newList.save();
-      res.status(201).send({ message: "Task list saved successfully!" });
+    const nameExists = await TaskList.findOne({ name });
+    if (nameExists) {
+      return res
+        .status(400)
+        .send({
+          error: "List name already exists. Please choose another name.",
+        });
     }
+
+    const newList = new TaskList({
+      hash,
+      name,
+      date: new Date(),
+      tasks,
+    });
+    await newList.save();
+    res.status(201).send({ message: "Task list saved successfully!" });
   } catch (err) {
     console.error("Error saving task list:", err);
     res
@@ -63,12 +63,13 @@ app.post("/save-list", async (req, res) => {
   }
 });
 
+// Route to fetch a list by hash
 app.get("/get-list/:hash", async (req, res) => {
   const { hash } = req.params;
 
   try {
-    const list = await TaskList.findOne({ hash });
-    if (list) {
+    const list = await TaskList.find({ hash });
+    if (list.length > 0) {
       res.status(200).send(list);
     } else {
       res.status(404).send({ message: "List not found" });
