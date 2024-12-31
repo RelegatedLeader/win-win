@@ -1,0 +1,18 @@
+#home_menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-direction: column; /* Ensures button is below the heading */
+  background-color: black;
+  color: white;
+}
+
+#note_taking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  flex-direction: column; /* Ensures button is below the heading */
+  background-color: black;
+}
