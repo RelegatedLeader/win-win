@@ -40,11 +40,9 @@ app.post("/save-list", async (req, res) => {
   try {
     const nameExists = await TaskList.findOne({ name });
     if (nameExists) {
-      return res
-        .status(400)
-        .send({
-          error: "List name already exists. Please choose another name.",
-        });
+      return res.status(400).send({
+        error: "List name already exists. Please choose another name.",
+      });
     }
 
     const newList = new TaskList({
