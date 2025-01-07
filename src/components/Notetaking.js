@@ -106,7 +106,7 @@ export default function Notetaking() {
   };
 
   const addTask = () => {
-    if (input.trim() && taskCash > 0) {
+    if (input.trim() && taskCash > -1) {
       setTasks([...tasks, { task: input, value: taskCash }]);
       setInput("");
       setTaskCash(0);
