@@ -40,6 +40,13 @@ export default function ShowNotes() {
     fetchNotes();
   }, [hash]);
 
+  // Calculate the total value of all tasks across all lists
+  const totalValue = notes.reduce((acc, note) => {
+    return (
+      acc + note.tasks.reduce((taskAcc, task) => taskAcc + (task.value || 0), 0)
+    );
+  }, 0);
+
   // Render loading state
   if (loading) {
     return (
@@ -79,38 +86,59 @@ export default function ShowNotes() {
       }}
     >
       <div className="container p-4">
-        <h1 className="text-center mb-4 text-light">Your Notes</h1>
+        <h1 className="text-center mb-4 text-light">Your Lists</h1>
+
+        {/* Display the overall total value */}
+        <div className="text-center mb-4">
+          <h3 className="text-warning">
+            Total Money Made:{" "}
+            <span className="text-light">${totalValue.toFixed(2)}</span>
+          </h3>
+        </div>
+
         {notes.length > 0 ? (
-          notes.map((note, idx) => (
-            <div className="card mb-4 bg-dark border border-light" key={idx}>
-              <div className="card-body">
-                <h5 className="card-title text-light">
-                  List Name: {note.name}
-                </h5>
-                <p className="card-text text-light">
-                  Date: {new Date(note.date).toLocaleString()}
-                </p>
-                <h6 className="text-light">Tasks:</h6>
-                <ul className="list-group">
-                  {note.tasks.length > 0 ? (
-                    note.tasks.map((task, index) => (
-                      <li
-                        key={index}
-                        className="list-group-item bg-warning border border-dark"
-                      >
-                        <span>{task.task}</span>
-                        <span className="float-end">${task.value}</span>
+          notes.map((note, idx) => {
+            // Calculate the daily total for each list
+            const dailyTotal = note.tasks.reduce(
+              (taskAcc, task) => taskAcc + (task.value || 0),
+              0
+            );
+
+            return (
+              <div className="card mb-4 bg-dark border border-light" key={idx}>
+                <div className="card-body">
+                  <h5 className="card-title text-light">
+                    List Name: {note.name}
+                  </h5>
+                  <p className="card-text text-light">
+                    Date: {new Date(note.date).toLocaleString()}
+                  </p>
+                  <h6 className="text-warning">
+                    Money Made on this Day:{" "}
+                    <span className="text-light">${dailyTotal.toFixed(2)}</span>
+                  </h6>
+                  <h6 className="text-light">Tasks:</h6>
+                  <ul className="list-group">
+                    {note.tasks.length > 0 ? (
+                      note.tasks.map((task, index) => (
+                        <li
+                          key={index}
+                          className="list-group-item bg-warning border border-dark"
+                        >
+                          <span>{task.task}</span>
+                          <span className="float-end">${task.value}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <li className="list-group-item text-center bg-light border border-dark">
+                        No tasks available.
                       </li>
-                    ))
-                  ) : (
-                    <li className="list-group-item text-center bg-light border border-dark">
-                      No tasks available.
-                    </li>
-                  )}
-                </ul>
+                    )}
+                  </ul>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="text-center mt-5">
             <p>No notes found for this hash.</p>
